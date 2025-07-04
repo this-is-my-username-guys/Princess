@@ -13,7 +13,6 @@
       margin: 0;
       padding: 0;
       height: 100%;
-      overflow: hidden;
       background-color: #000;
       font-family: 'IM Fell English SC', serif;
     }
@@ -51,6 +50,7 @@
 
     .button-container {
       margin-bottom: 20px;
+      text-align: center;
     }
 
     .next-button {
@@ -64,6 +64,7 @@
       font-family: 'IM Fell English SC', serif;
       text-shadow: 0 0 4px #ffea00;
       transition: all 0.3s ease;
+      margin: 5px;
     }
 
     .next-button:hover {
@@ -98,26 +99,26 @@
 
   <div class="button-container">
     <button class="next-button" onclick="location.href='oracle.html'">Continue</button>
+    <button class="next-button" id="play-music-btn">Play Audio</button>
   </div>
 
-  <!-- Correct audio element with ID -->
   <audio id="bg-audio">
     <source src="images/poem.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
   </audio>
 
-  <!-- Play audio on first user interaction -->
   <script>
     const audio = document.getElementById('bg-audio');
+    const playBtn = document.getElementById('play-music-btn');
 
-    const startAudioOnce = () => {
-      audio.play().catch(() => {});
-      window.removeEventListener('click', startAudioOnce);
-      window.removeEventListener('touchstart', startAudioOnce);
-    };
-
-    window.addEventListener('click', startAudioOnce);
-    window.addEventListener('touchstart', startAudioOnce);
+    playBtn.addEventListener('click', () => {
+      audio.play().then(() => {
+        playBtn.style.display = 'none';
+      }).catch((err) => {
+        alert("Audio couldn't play automatically. Try tapping again.");
+        console.error(err);
+      });
+    });
   </script>
 
 </body>
