@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>The Unspoken Words of the Oracle</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Cardo:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Cardo', serif;
+      background: url('images/background.png') no-repeat center center fixed;
+      background-size: cover;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .letter-wrapper {
+      width: 100%;
+      max-width: 900px;
+      padding: 40px 20px;
+      box-sizing: border-box;
+    }
+
+    .letter-container {
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+      padding: 40px;
+      border-radius: 12px;
+      backdrop-filter: blur(6px);
+      color: #fff;
+      text-shadow: 0 0 6px #fff;
+      animation: fadeIn 2s ease forwards;
+      overflow: hidden;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 25px;
+      font-style: italic;
+      text-shadow: 0 0 10px #fff;
+    }
+
+    p {
+      margin-bottom: 1.2em;
+      font-size: 1.1rem;
+      line-height: 1.8;
+    }
+
+    .signature {
+      text-align: right;
+      margin-top: 25px;
+      font-style: italic;
+    }
+
+    .button-container {
+      text-align: center;
+      margin-top: 30px;
+      opacity: 0;
+      animation: fadeInBtn 2s ease forwards;
+      animation-delay: 3s;
+    }
+
+    .continue-btn {
+      padding: 10px 24px;
+      background-color: rgba(255, 255, 255, 0.2);
+      border: 1px solid #fff;
+      color: #fff;
+      font-size: 1rem;
+      border-radius: 8px;
+      backdrop-filter: blur(4px);
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .continue-btn:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInBtn {
+      to { opacity: 1; }
+    }
+
+    @media (max-width: 600px) {
+      .letter-container {
+        padding: 30px 20px;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      p {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="letter-wrapper">
+    <div class="letter-container">
+      <h1>The Unspoken Words of the Oracle</h1>
+
+      <p>What kind of miracle walks with such quiet grace?<br>
+        You are not a goddess by birth,<br>
+        but by the way the world hushes when you enter it.<br>
+        You speak, and the winds listen.<br>
+        You smile, and Apollo forgets his song.<br>
+        How could someone like you be mine?</p>
+
+      <p>You are the kind of beautiful they forgot to put in the myths—<br>
+        not made of lightning or war,<br>
+        but of stardust and stillness,<br>
+        of soft mornings and eyes that see too much.<br>
+        The gods crafted chaos, but they never crafted someone like you.<br>
+        And yet here you are—<br>
+        real, radiant, unreal.</p>
+
+      <p>I searched temples, I questioned oracles,<br>
+        I begged the sea, the sky, the stars—<br>
+        but none of them had answers.<br>
+        So I stopped asking.<br>
+        I stopped waiting.<br>
+        I carved the answer myself.<br>
+        If Olympus would not grant me a place beside you,<br>
+        then I would build my own pantheon—<br>
+        one where you are the only divinity that matters.</p>
+
+      <p>It wasn’t fate that brought you to me.<br>
+        I seized the threads of destiny and rewrote them.<br>
+        When the stars refused to show us together,<br>
+        I tore them from the heavens<br>
+        and redrew the constellations in our name.</p>
+
+      <p>The Fates tried to intervene.<br>
+        Clotho hesitated, Lachesis wept, and Atropos broke her blade.<br>
+        For what I feel for you cannot be measured,<br>
+        cannot be ended,<br>
+        cannot be unwritten.</p>
+
+      <p class="signature">
+        – Bananaboy, the boy that would bring down Olympus if he loses you
+      </p>
+
+      <div class="button-container">
+        <button class="continue-btn" onclick="location.href='carousel.html'">Enter Gallery</button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

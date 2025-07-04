@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>To My Princess</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Greek-style font -->
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&display=swap" rel="stylesheet" />
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      background-color: #000;
+      font-family: 'IM Fell English SC', serif;
+    }
+
+    body {
+      background: url('images/scroll-bg.png') no-repeat center center fixed;
+      background-size: contain;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 3vh 5vw;
+      box-sizing: border-box;
+    }
+
+    .title {
+      font-size: clamp(1.2rem, 4vw, 2rem);
+      color: #000;
+      text-align: center;
+      margin-top: 10px;
+      text-shadow: 0 0 2px #ffd700, 0 0 5px #ffcc00;
+    }
+
+    .poem-container {
+      text-align: center;
+      color: #000;
+      max-width: 80%;
+    }
+
+    .line {
+      font-size: clamp(0.9rem, 1.8vw, 1.2rem);
+      margin-bottom: 1em;
+      text-shadow: 0 0 2px #ffd700, 0 0 5px #ffcc00;
+    }
+
+    .button-container {
+      margin-bottom: 20px;
+    }
+
+    .next-button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #000;
+      color: #ffd700;
+      border: 2px solid #ffd700;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'IM Fell English SC', serif;
+      text-shadow: 0 0 4px #ffea00;
+      transition: all 0.3s ease;
+    }
+
+    .next-button:hover {
+      background-color: #ffd700;
+      color: #000;
+      text-shadow: none;
+    }
+
+    @media (max-width: 600px) {
+      .line {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="title">To My Princess</div>
+
+  <div class="poem-container">
+    <div class="line">I’ve seen the skies above Olympus flame,</div>
+    <div class="line">Yet none could dare to speak your name.</div>
+    <div class="line">The Fates went blind, the stars stood still,</div>
+    <div class="line">When you arrived and bent their will.</div>
+    <div class="line">The sea once called me son of tide,</div>
+    <div class="line">But in your gaze, the waves subside.</div>
+    <div class="line">No shield I own, no sword I wield,</div>
+    <div class="line">Can match the way your heart made mine unsealed.</div>
+    <div class="line">You are the storm the myths forgot,</div>
+    <div class="line">A love the gods themselves could not.</div>
+  </div>
+
+  <div class="button-container">
+    <button class="next-button" onclick="location.href='oracle.html'">Continue</button>
+  </div>
+
+  <!-- Correct audio element with ID -->
+  <audio id="bg-audio">
+    <source src="images/poem.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <!-- Play audio on first user interaction -->
+  <script>
+    const audio = document.getElementById('bg-audio');
+
+    const startAudioOnce = () => {
+      audio.play().catch(() => {});
+      window.removeEventListener('click', startAudioOnce);
+      window.removeEventListener('touchstart', startAudioOnce);
+    };
+
+    window.addEventListener('click', startAudioOnce);
+    window.addEventListener('touchstart', startAudioOnce);
+  </script>
+
+</body>
+</html>

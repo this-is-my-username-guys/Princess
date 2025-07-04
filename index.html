@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Prophecy Reveal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Uncial+Antiqua&display=swap');
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Uncial Antiqua', Georgia, serif;
+    }
+
+    body {
+      background: url('images/bg.jpg') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      flex-direction: column;
+    }
+
+    .text-box {
+      font-size: clamp(1.4rem, 5vw, 2.2rem);
+      max-width: 90%;
+      padding: 20px 30px;
+      line-height: 1.6;
+      transition: all 0.3s ease;
+    }
+
+    /* Greek style */
+    .greek {
+      color: #000;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      text-shadow:
+        0 0 2px #ffd700,
+        1px 0 2px #ffc400,
+        -1px 0 2px #ffc400,
+        0 1px 2px #ffcc00,
+        0 -1px 2px #ffcc00,
+        1px 1px 3px #ffaa00,
+        -1px -1px 3px #ffaa00;
+      -webkit-text-stroke: 0.8px transparent;
+      animation: greekShine 4s ease-in-out infinite;
+    }
+
+    @keyframes greekShine {
+      0% { background-position: 200% center; }
+      50% { background-position: 0% center; }
+      100% { background-position: 200% center; }
+    }
+
+    /* English style */
+    .english {
+      color: white;
+      text-shadow:
+        0 0 10px #ffffff,
+        0 0 25px #ffffff,
+        0 0 60px #ffffff,
+        0 0 100px #ffffff;
+      -webkit-text-stroke: 1px white;
+    }
+
+    .fade-out {
+      animation: flickerOut 1.5s forwards;
+    }
+
+    @keyframes flickerOut {
+      0%   { opacity: 1; }
+      10%  { opacity: 0.3; }
+      20%  { opacity: 0.8; }
+      40%  { opacity: 0.1; }
+      60%  { opacity: 0.6; }
+      80%  { opacity: 0.2; }
+      100% { opacity: 0; }
+    }
+
+    .fade-in {
+      opacity: 0;
+      animation: fadeInMystic 2s ease forwards;
+    }
+
+    @keyframes fadeInMystic {
+      0% {
+        opacity: 0;
+        text-shadow: none;
+        transform: scale(0.98);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .enter-button {
+  margin-top: 30px;
+  padding: 12px 28px;
+  font-size: 1.2rem;
+  background: linear-gradient(145deg, #c6862f, #a06b2e);
+  border: 2px solid #ffd36e;
+  color: #fffbe6;
+  border-radius: 8px;
+  font-family: 'Uncial Antiqua', Georgia, serif;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(20px);
+  transition: opacity 1.5s ease, transform 1.5s ease;
+  box-shadow:
+    0 0 8px #ffbb55,
+    0 0 16px #ff9933,
+    0 0 32px #ff8800;
+  text-shadow:
+    0 0 4px #fff8dc,
+    0 0 10px #ffe4b5;
+}
+
+.enter-button:hover {
+  background: linear-gradient(145deg, #d0913c, #8a4c1d);
+  transform: scale(1.06);
+  box-shadow:
+    0 0 12px #ffcc77,
+    0 0 24px #ffaa44,
+    0 0 40px #ff8800;
+}
+
+.show-button {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+  </style>
+</head>
+<body>
+
+  <div class="text-box greek" id="prophecy">
+    Σὺ εἶ ἡ ἀρχὴ καὶ τὸ τέλος μου.
+  </div>
+
+  <a href="scroll.html" id="enterBtn" class="enter-button">Enter Camp Half-Blood…</a>
+
+  <script>
+    setTimeout(() => {
+      const box = document.getElementById('prophecy');
+      const button = document.getElementById('enterBtn');
+      box.classList.add('fade-out');
+
+      setTimeout(() => {
+        box.textContent = "You are my beginning and my end.";
+        box.className = "text-box english fade-in";
+
+        // Show the button after a short delay
+        setTimeout(() => {
+          button.classList.add('show-button');
+        }, 2000);
+      }, 1600);
+    }, 2500);
+  </script>
+
+</body>
+</html>
