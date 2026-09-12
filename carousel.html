@@ -80,6 +80,35 @@
     @keyframes fadeIn {
       to { opacity: 1; }
     }
+
+  .next-page-btn {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  
+  padding: 14px 30px;
+  border: 1px solid rgba(255,255,255,0.7);
+  border-radius: 30px;
+  
+  color: white;
+  text-decoration: none;
+  font-family: Georgia, serif;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  
+  background: rgba(0,0,0,0.25);
+  backdrop-filter: blur(8px);
+  
+  box-shadow: 0 0 15px rgba(255,255,255,0.2);
+  transition: all 0.3s ease;
+}
+
+.next-page-btn:hover {
+  background: rgba(255,255,255,0.15);
+  box-shadow: 0 0 25px rgba(255,255,255,0.5);
+  transform: translateX(-50%) scale(1.05);
+}
   </style>
 </head>
 <body>
@@ -104,6 +133,10 @@
 <div class="poetic-caption">
   Nunc scio quid sit amor.... <strong>est tu</strong>.
 </div>
+
+<a href="if-you-were-here.html" class="next-page-btn">
+  Continue →
+</a>
 
 <script>
   let xPos = 0;
