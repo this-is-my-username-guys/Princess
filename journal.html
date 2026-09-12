@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Things I Leave For You</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+
+  /* ============================================================
+     TOKENS — shared aesthetic with the rest of the site
+     ============================================================ */
+  :root{
+    --navy-deep: #070a13;
+    --navy: #0c1120;
+    --navy-soft: #131a2e;
+    --gold: #d8b370;
+    --gold-bright: #f0c987;
+    --cream: #ece6d6;
+    --cream-dim: #b9b6ab;
+    --blue-grey: #6f7893;
+    --line: rgba(216, 179, 112, 0.22);
+
+    --serif: 'Cormorant Garamond', Georgia, serif;
+    --sans: 'Jost', 'Helvetica Neue', sans-serif;
+    --hand: 'Caveat', cursive;
+  }
+
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+  body{
+    margin:0; padding:0;
+    background: var(--navy-deep);
+    color: var(--cream);
+    font-family: var(--sans);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+  ::selection{ background: rgba(240,201,135,0.4); color: var(--navy-deep); }
+
+  /* ============================================================
+     BACKGROUND — drifting stars + faint constellation lines
+     ============================================================ */
+  #sky{
+    position: fixed; inset:0;
+    z-index:0;
+    background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(216,179,112,0.05), transparent 60%), var(--navy-deep);
+    overflow:hidden;
+    pointer-events:none;
+  }
+  .star{
+    position:absolute;
+    background: #f4ecd8;
+    border-radius:50%;
+    animation: twinkle ease-in-out infinite;
+  }
+  @keyframes twinkle{
+    0%, 100%{ opacity:0.15; }
+    50%{ opacity:0.9; }
+  }
+  .drift{
+    position:absolute;
+    width:1px; height:1px;
+    background: var(--gold-bright);
+    border-radius:50%;
+    opacity:0;
+    animation: driftUp linear infinite;
+  }
+  @keyframes driftUp{
+    0%{ opacity:0; transform: translateY(0); }
+    10%{ opacity:0.6; }
+    90%{ opacity:0.2; }
+    100%{ opacity:0; transform: translateY(-100vh); }
+  }
+
+  /* ============================================================
+     HEADER
+     ============================================================ */
+  header{
+    position:relative; z-index:2;
+    text-align:center;
+    padding: 110px 24px 70px;
+  }
+  .header-mark{
+    width: 40px; height:1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 0 auto 30px;
+    opacity:0.8;
+  }
+  h1{
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(32px, 6vw, 52px);
+    color: var(--gold-bright);
+    margin: 0 0 20px;
+    letter-spacing: 0.01em;
+  }
+  .header-sub{
+    font-family: var(--serif);
+    font-size: clamp(16px, 2.2vw, 19px);
+    line-height: 1.7;
+    color: var(--cream-dim);
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  /* ============================================================
+     TIMELINE
+     ============================================================ */
+  #timeline{
+    position:relative; z-index:2;
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+  .spine{
+    position:absolute;
+    left: 50%;
+    top:0; bottom:0;
+    width: 1px;
+    transform: translateX(-50%);
+    background: linear-gradient(180deg, transparent, var(--line) 4%, var(--line) 96%, transparent);
+  }
+  .spine-glow{
+    position:absolute;
+    left:50%; top:0;
+    width: 3px; height: 100%;
+    transform: translateX(-50%);
+    background: linear-gradient(180deg, rgba(240,201,135,0.15), transparent 60%);
+    filter: blur(2px);
+    animation: spineGlow 6s ease-in-out infinite;
+  }
+  @keyframes spineGlow{
+    0%,100%{ opacity:0.4; }
+    50%{ opacity:0.9; }
+  }
+
+  .constellation{
+    position:relative;
+    text-align:center;
+    color: var(--gold);
+    font-size: 14px;
+    opacity: 0.6;
+    margin: 6px 0 26px;
+    z-index:2;
+    letter-spacing: 0.2em;
+  }
+
+  /* ---- entry (journal card) ---- */
+  .entry{
+    position:relative;
+    margin: 0 auto 44px;
+    max-width: 480px;
+    opacity:0;
+    transform: translateY(24px);
+    transition: opacity 0.9s ease, transform 0.9s ease;
+  }
+  .entry.visible{
+    opacity:1;
+    transform: translateY(0);
+  }
+
+  .entry-card{
+    background: linear-gradient(160deg, var(--navy-soft), var(--navy));
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 26px 28px;
+    cursor: pointer;
+    box-shadow: 0 14px 34px rgba(0,0,0,0.35);
+    transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+  }
+  .entry-card:hover{
+    transform: translateY(-2px);
+    border-color: rgba(216,179,112,0.45);
+    box-shadow: 0 18px 44px rgba(0,0,0,0.45);
+  }
+
+  .entry-meta{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .entry-date{
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--blue-grey);
+  }
+  .entry-type{
+    font-family: var(--sans);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+    border: 1px solid var(--line);
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space:nowrap;
+  }
+
+  .entry-title{
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(20px, 3vw, 24px);
+    color: var(--gold-bright);
+    margin: 0 0 10px;
+  }
+
+  .entry-preview{
+    font-family: var(--serif);
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--cream-dim);
+    margin:0;
+  }
+
+  .entry-full{
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.8;
+    color: var(--cream);
+    margin: 16px 0 0;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.6s ease, opacity 0.5s ease, margin 0.6s ease;
+  }
+  .entry-full p{ margin: 0 0 14px; }
+  .entry-full p:last-child{ margin-bottom:0; }
+
+  .entry.open .entry-full{
+    max-height: 600px;
+    opacity: 1;
+  }
+  .entry.open .entry-preview{ display:none; }
+
+  .entry-hint{
+    display:block;
+    margin-top: 14px;
+    font-family: var(--sans);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--blue-grey);
+    opacity: 0.7;
+  }
+  .entry.open .entry-hint{ opacity:0; height:0; margin:0; }
+
+  /* alternate sides slightly on wider screens for a journal-y feel */
+  @media (min-width: 700px){
+    .entry:nth-child(odd) .entry-card{ margin-right: 12%; }
+    .entry:nth-child(even) .entry-card{ margin-left: 12%; }
+  }
+
+  /* ============================================================
+     CLOSING SECTION
+     ============================================================ */
+  #closing{
+    position:relative; z-index:2;
+    text-align:center;
+    padding: 40px 24px 120px;
+  }
+  .closing-mark{
+    width: 30px; height:1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 0 auto 26px;
+    opacity:0.7;
+  }
+  .closing-title{
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(20px, 3vw, 26px);
+    color: var(--gold-bright);
+    margin: 0 0 14px;
+  }
+  .closing-sub{
+    font-family: var(--serif);
+    font-size: 16px;
+    color: var(--cream-dim);
+    margin: 0 0 34px;
+  }
+  .room-link-wrap{
+    margin-top: 56px;
+    padding-top: 40px;
+    border-top: 1px solid var(--line);
+  }
+  .room-link-btn{
+    display:inline-block;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 17px;
+    color: var(--gold-bright);
+    text-decoration:none;
+    padding: 14px 30px;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.4s ease, opacity 0.4s ease;
+    opacity: 0.85;
+  }
+  .room-link-btn:hover{
+    border-color: var(--gold);
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<div id="sky"></div>
+
+<header>
+  <div class="header-mark"></div>
+  <h1>Things I Leave For You</h1>
+  <p class="header-sub">A few things I wanted you to have, even on the days I couldn't be there to give them to you myself.</p>
+</header>
+
+<div id="timeline">
+  <div class="spine"></div>
+  <div class="spine-glow"></div>
+
+  <!-- ============================================================
+       JOURNAL ENTRIES
+       To add a new entry, copy one whole <div class="entry">...</div>
+       block (including the constellation mark above it), paste it
+       below the last entry, then just change:
+         - data-date / the visible date text
+         - the TYPE badge text
+         - the title
+         - the preview line
+         - the full text inside .entry-full (one <p> per paragraph)
+       Keep entries in chronological order, oldest to newest.
+     ============================================================ -->
+
+  <!-- ADD NEW JOURNAL ENTRIES HERE -->
+
+  <div class="constellation">✦</div>
+  <div class="entry" data-date="2026-01-05">
+    <div class="entry-card">
+      <div class="entry-meta">
+        <span class="entry-date">January 5, 2026</span>
+        <span class="entry-type">First Entry</span>
+      </div>
+      <h3 class="entry-title">I'm Starting This</h3>
+      <p class="entry-preview">I don't really know how this is going to turn out, but I found out I'm going to be far away soon...</p>
+      <div class="entry-full">
+        <p>I don't really know how this is going to turn out, but I wanted to start something for you.</p>
+        <p>I found out I'm going to be leaving soon, and the thought of being far from you scared me a little. So I figured if I can't always be there in person, I want to leave pieces of myself here for you anyway.</p>
+        <p>Every month, on the 5th, I want to leave you something. Maybe it'll be a proper love note. Maybe it'll just be something stupid I was thinking about. Maybe it'll be something I didn't know how to say properly.</p>
+        <p>I just want there to be little pieces of me waiting here for you, especially on the days I actually am far away.</p>
+        <p>So this is the first one.</p>
+        <p>Hi, pattu. I love you.</p>
+      </div>
+      <span class="entry-hint">tap to read</span>
+    </div>
+  </div>
+
+  <div class="constellation">✦</div>
+  <div class="entry" data-date="2026-02-05">
+    <div class="entry-card">
+      <div class="entry-meta">
+        <span class="entry-date">February 5, 2026</span>
+        <span class="entry-type">Love Note</span>
+      </div>
+      <h3 class="entry-title">Before Everything Changes</h3>
+      <p class="entry-preview">Another month closer to me leaving. I don't want you worrying about it more than you have to...</p>
+      <div class="entry-full">
+        <p>Another month closer to me leaving.</p>
+        <p>I keep thinking about how strange it's going to feel not seeing you as easily as I do now. But I don't want you worrying about it more than you have to.</p>
+        <p>Whatever it looks like once I'm gone, I need you to know I'm not going anywhere in the ways that actually matter.</p>
+        <p>You aren't just someone I love. You're someone I naturally look for in my life, and an ocean isn't going to change that.</p>
+      </div>
+      <span class="entry-hint">tap to read</span>
+    </div>
+  </div>
+
+  <div class="constellation">✦</div>
+  <div class="entry" data-date="2026-03-05">
+    <div class="entry-card">
+      <div class="entry-meta">
+        <span class="entry-date">March 5, 2026</span>
+        <span class="entry-type">Reminder</span>
+      </div>
+      <h3 class="entry-title">In Case You Forget</h3>
+      <p class="entry-preview">In case you ever forget, here's your reminder, especially with everything about to change...</p>
+      <div class="entry-full">
+        <p>In case you ever forget, here's your reminder, especially with everything about to change.</p>
+        <p>You are loved.</p>
+        <p>Not because you did something amazing today. Not because everything is going perfectly. Not because you made me happy.</p>
+        <p>Just because you're you.</p>
+        <p>Distance isn't going to change that. You don't have to earn my love every day, bujji.</p>
+        <p>You already have it.</p>
+      </div>
+      <span class="entry-hint">tap to read</span>
+    </div>
+  </div>
+
+  <div class="constellation">✦</div>
+  <div class="entry" data-date="2026-04-05">
+    <div class="entry-card">
+      <div class="entry-meta">
+        <span class="entry-date">April 5, 2026</span>
+        <span class="entry-type">Diary</span>
+      </div>
+      <h3 class="entry-title">One Week Left</h3>
+      <p class="entry-preview">One week left before I leave. I still don't fully know what it's going to feel like...</p>
+      <div class="entry-full">
+        <p>One week left before I leave.</p>
+        <p>I keep trying to picture what it's going to feel like once I'm actually far away, and I still don't fully know.</p>
+        <p>What I do know is that whatever this distance looks like, it doesn't change what's between us.</p>
+        <p>I'm not scared of missing you. I'm scared of you thinking the distance means anything about how I feel.</p>
+        <p>So before I go, I just wanted you to have this. Something ordinary. Something that reminds you I'm still exactly as much yours from far away as I am right now.</p>
+      </div>
+      <span class="entry-hint">tap to read</span>
+    </div>
+  </div>
+
+  <div class="constellation">✦</div>
+  <div class="entry" data-date="2026-05-05">
+    <div class="entry-card">
+      <div class="entry-meta">
+        <span class="entry-date">May 5, 2026</span>
+        <span class="entry-type">I Miss You</span>
+      </div>
+      <h3 class="entry-title">One More Month</h3>
+      <p class="entry-preview">I miss you. I know that's probably not news to you...</p>
+      <div class="entry-full">
+        <p>I miss you.</p>
+        <p>I know that's probably not news to you, but sometimes I don't think saying it enough makes it any less true.</p>
+        <p>I miss being able to just see you.</p>
+        <p>I miss the little things that don't seem important until they're suddenly far away.</p>
+        <p>One more month until our anniversary.</p>
+        <p>And somehow, even with all this distance, I'm still so sure about you.</p>
+      </div>
+      <span class="entry-hint">tap to read</span>
+    </div>
+  </div>
+
+  <div class="constellation">✦</div>
+  <div class="entry" data-date="2026-06-05">
+    <div class="entry-card">
+      <div class="entry-meta">
+        <span class="entry-date">June 5, 2026</span>
+        <span class="entry-type">Our Day</span>
+      </div>
+      <h3 class="entry-title">Us</h3>
+      <p class="entry-preview">June 5. Our day. I don't think I can fit everything I feel about us into one little entry...</p>
+      <div class="entry-full">
+        <p>June 5.</p>
+        <p>Our day.</p>
+        <p>I don't think I can fit everything I feel about us into one little entry, so I'm not going to try.</p>
+        <p>I just want to say thank you.</p>
+        <p>Thank you for choosing me. Thank you for staying. Thank you for every stupid conversation, every laugh, every argument we survived, every little moment that became ours.</p>
+        <p>I love what we've built.</p>
+        <p>And I love you even more than I know how to explain.</p>
+      </div>
+      <span class="entry-hint">tap to read</span>
+    </div>
+  </div>
+
+  <div class="constellation">✦</div>
+  <div class="entry" data-date="2026-06-14">
+    <div class="entry-card">
+      <div class="entry-meta">
+        <span class="entry-date">June 14, 2026</span>
+        <span class="entry-type">Birthday</span>
+      </div>
+      <h3 class="entry-title">My Birthday</h3>
+      <p class="entry-preview">It's my birthday today. And honestly, one of the first things I thought about was you...</p>
+      <div class="entry-full">
+        <p>It's my birthday today.</p>
+        <p>And honestly, one of the first things I thought about was you.</p>
+        <p>I don't think I need a huge birthday wish this year.</p>
+        <p>I already have something I want very badly.</p>
+        <p>More time with you.</p>
+        <p>More birthdays where you're somewhere in my life. More ordinary days. More anniversaries. More stupid little memories that we'll eventually look back on and laugh about.</p>
+        <p>Thank you for being one of the best parts of my life.</p>
+        <p>I love you, Calypso.</p>
+      </div>
+      <span class="entry-hint">tap to read</span>
+    </div>
+  </div>
+
+  <div class="constellation">✦</div>
+  <div class="entry" data-date="2026-07-05">
+    <div class="entry-card">
+      <div class="entry-meta">
+        <span class="entry-date">July 5, 2026</span>
+        <span class="entry-type">Future</span>
+      </div>
+      <h3 class="entry-title">Someday</h3>
+      <p class="entry-preview">Someday, I want these entries to feel funny. Not because they weren't important...</p>
+      <div class="entry-full">
+        <p>Someday, I want these entries to feel funny.</p>
+        <p>Not because they weren't important, but because we'll finally be close enough that I won't have to leave little notes on a website just to make sure you have something from me.</p>
+        <p>I'll just be there.</p>
+        <p>I'll annoy you in person instead.</p>
+        <p>Until then, I'll keep leaving these little pieces of myself here for you.</p>
+      </div>
+      <span class="entry-hint">tap to read</span>
+    </div>
+  </div>
+
+  <div class="constellation">✦</div>
+  <div class="entry" data-date="2026-08-05">
+    <div class="entry-card">
+      <div class="entry-meta">
+        <span class="entry-date">August 5, 2026</span>
+        <span class="entry-type">Random Thought</span>
+      </div>
+      <h3 class="entry-title">A Small Thing</h3>
+      <p class="entry-preview">Random thought for this month. I hope you never become so used to me loving you...</p>
+      <div class="entry-full">
+        <p>Random thought for this month.</p>
+        <p>I hope you never become so used to me loving you that you stop noticing it.</p>
+        <p>Not because I want you to constantly think about it.</p>
+        <p>I just hope you always know that somewhere, someone is very happy that you exist.</p>
+        <p>That someone is me.</p>
+      </div>
+      <span class="entry-hint">tap to read</span>
+    </div>
+  </div>
+
+  <div class="constellation">✦</div>
+  <div class="entry" data-date="2026-09-05">
+    <div class="entry-card">
+      <div class="entry-meta">
+        <span class="entry-date">September 5, 2026</span>
+        <span class="entry-type">Love Note</span>
+      </div>
+      <h3 class="entry-title">Still You</h3>
+      <p class="entry-preview">Another month. And after everything, it's still you...</p>
+      <div class="entry-full">
+        <p>Another month.</p>
+        <p>And after everything, it's still you.</p>
+        <p>That's probably one of the simplest things I can say, but I mean it.</p>
+        <p>Through distance, bad days, misunderstandings, and everything else life has thrown at us, when I think about who I want beside me, I still think of you.</p>
+        <p>Still you.</p>
+        <p>Always you.</p>
+      </div>
+      <span class="entry-hint">tap to read</span>
+    </div>
+  </div>
+
+</div>
+
+<section id="closing">
+  <div class="closing-mark"></div>
+  <p class="closing-title">To be continued...</p>
+  <p class="closing-sub">There are still so many things I haven't told you yet.</p>
+  <div class="room-link-wrap">
+    <a class="room-link-btn" href="if-you-were-here.html">Come sit with me for a minute →</a>
+  </div>
+</section>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- scatter background stars ----------
+  var sky = document.getElementById('sky');
+  for(var i=0;i<70;i++){
+    var s = document.createElement('div');
+    s.className = 'star';
+    var size = Math.random()*1.6 + 0.6;
+    s.style.width = size + 'px';
+    s.style.height = size + 'px';
+    s.style.left = (Math.random()*100) + '%';
+    s.style.top = (Math.random()*100) + '%';
+    s.style.animationDuration = (2.5 + Math.random()*3) + 's';
+    s.style.animationDelay = (Math.random()*4) + 's';
+    sky.appendChild(s);
+  }
+  for(var j=0;j<14;j++){
+    var d = document.createElement('div');
+    d.className = 'drift';
+    d.style.left = (Math.random()*100) + '%';
+    d.style.animationDuration = (14 + Math.random()*10) + 's';
+    d.style.animationDelay = (Math.random()*14) + 's';
+    sky.appendChild(d);
+  }
+
+  // ---------- entries: click to expand, scroll-reveal ----------
+  var entries = Array.from(document.querySelectorAll('.entry'));
+
+  entries.forEach(function(entry){
+    var card = entry.querySelector('.entry-card');
+    card.addEventListener('click', function(){
+      entry.classList.toggle('open');
+    });
+  });
+
+  var revealObserver = new IntersectionObserver(function(items){
+    items.forEach(function(item){
+      if(item.isIntersecting){
+        item.target.classList.add('visible');
+        revealObserver.unobserve(item.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  entries.forEach(function(entry){ revealObserver.observe(entry); });
+
+})();
+</script>
+</body>
+</html>
