@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>If You Were Here</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+
+  /* ============================================================
+     TOKENS — edit these to reskin without touching layout code
+     ============================================================ */
+  :root{
+    --navy-deep: #070a13;
+    --navy: #0c1120;
+    --navy-soft: #131a2e;
+    --gold: #d8b370;
+    --gold-bright: #f0c987;
+    --amber-glow: rgba(240, 190, 120, 0.45);
+    --cream: #ece6d6;
+    --cream-dim: #b9b6ab;
+    --blue-grey: #6f7893;
+    --line: rgba(216, 179, 112, 0.18);
+
+    --serif: 'Cormorant Garamond', Georgia, serif;
+    --sans: 'Jost', 'Helvetica Neue', sans-serif;
+    --hand: 'Caveat', cursive;
+  }
+
+  *{ box-sizing: border-box; }
+  html, body{
+    margin:0; padding:0; height:100%;
+    background: var(--navy-deep);
+    color: var(--cream);
+    font-family: var(--sans);
+    overflow: hidden;
+  }
+  ::selection{ background: var(--amber-glow); color: var(--navy-deep); }
+
+  #stage{
+    position: relative;
+    width: 100vw; height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ============================================================
+     BACKGROUND — soft vignette + drifting star dust everywhere
+     ============================================================ */
+  .bg-glow{
+    position:absolute; inset:0;
+    background:
+      radial-gradient(ellipse 60% 40% at 50% 15%, rgba(216,179,112,0.06), transparent 60%),
+      radial-gradient(ellipse 90% 70% at 50% 100%, rgba(10,14,26,0.9), transparent 60%),
+      var(--navy-deep);
+    z-index:0;
+  }
+
+  /* ============================================================
+     SCENE 1 — DOORWAY / OPENING
+     ============================================================ */
+  #opening{
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    z-index: 20;
+    transition: opacity 1.4s ease, filter 1.4s ease;
+  }
+  #opening.leaving{
+    opacity:0;
+    filter: blur(8px);
+    pointer-events:none;
+  }
+  .opening-inner{
+    text-align:center;
+    max-width: 620px;
+    padding: 0 28px;
+    animation: riseIn 1.6s ease both;
+  }
+  @keyframes riseIn{
+    from{ opacity:0; transform: translateY(18px); }
+    to{ opacity:1; transform: translateY(0); }
+  }
+  .opening-mark{
+    width: 40px; height:1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 0 auto 34px;
+    opacity:0.8;
+  }
+  .opening-title{
+    font-family: var(--serif);
+    font-weight: 500;
+    font-style: italic;
+    font-size: clamp(28px, 5vw, 44px);
+    line-height: 1.3;
+    color: var(--gold-bright);
+    margin: 0 0 22px;
+    letter-spacing: 0.01em;
+  }
+  .opening-sub{
+    font-family: var(--serif);
+    font-size: clamp(17px, 2.4vw, 21px);
+    line-height: 1.6;
+    color: var(--cream-dim);
+    margin: 0 0 44px;
+    font-weight: 400;
+  }
+  .come-in-btn{
+    font-family: var(--sans);
+    font-size: 14px;
+    letter-spacing: 0.06em;
+    color: var(--navy-deep);
+    background: linear-gradient(180deg, var(--gold-bright), var(--gold));
+    border: none;
+    padding: 15px 42px;
+    border-radius: 2px;
+    cursor: pointer;
+    box-shadow: 0 0 0 rgba(240,190,120,0);
+    transition: box-shadow 0.5s ease, transform 0.3s ease;
+  }
+  .come-in-btn:hover{
+    box-shadow: 0 4px 28px var(--amber-glow);
+    transform: translateY(-1px);
+  }
+  .come-in-btn:active{ transform: translateY(0px) scale(0.98); }
+
+  /* ============================================================
+     SCENE 2 — THE ROOM
+     ============================================================ */
+  #room{
+    position:absolute; inset:0;
+    z-index:10;
+    opacity:0;
+    transition: opacity 1.6s ease 0.3s;
+  }
+  #room.active{ opacity:1; }
+
+  .room-frame{
+    position:relative;
+    width:100%; height:100%;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .room-caption{
+    position:absolute;
+    top: max(22px, 4vh);
+    left:0; right:0;
+    text-align:center;
+    z-index: 5;
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--cream-dim);
+    font-size: clamp(14px, 2vw, 17px);
+    letter-spacing: 0.01em;
+    opacity: 0.85;
+    padding: 0 20px;
+    pointer-events:none;
+  }
+
+  /* the floor / room box */
+  .room-box{
+    position:absolute;
+    left: 6%; right: 6%;
+    bottom: 6%;
+    top: 12%;
+    background: linear-gradient(180deg, var(--navy-soft) 0%, var(--navy) 70%);
+    border-radius: 6px 6px 2px 2px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.02);
+    overflow:hidden;
+  }
+
+  /* window */
+  .window{
+    position:absolute;
+    top: 8%; left: 50%;
+    transform: translateX(-50%);
+    width: 46%;
+    max-width: 260px;
+    aspect-ratio: 3/4;
+    border: 3px solid #2a2f42;
+    border-radius: 6px 6px 2px 2px;
+    background: radial-gradient(ellipse at 50% 30%, #16203f 0%, #0a0f22 70%, #070a13 100%);
+    cursor: pointer;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    box-shadow: 0 0 0 rgba(216,179,112,0);
+  }
+  .window:hover{ transform: translateX(-50%) scale(1.02); box-shadow: 0 0 30px rgba(216,179,112,0.15); }
+  .window::before{ /* mullion cross */
+    content:'';
+    position:absolute; inset:0;
+    background:
+      linear-gradient(90deg, transparent 49%, #2a2f42 49%, #2a2f42 51%, transparent 51%),
+      linear-gradient(0deg, transparent 49%, #2a2f42 49%, #2a2f42 51%, transparent 51%);
+    z-index:2;
+  }
+  .moon{
+    position:absolute; top:14%; right:18%;
+    width: 22px; height:22px;
+    background: radial-gradient(circle at 35% 35%, #fff6df, var(--gold-bright));
+    border-radius: 50%;
+    box-shadow: 0 0 18px 4px rgba(240,201,135,0.35);
+  }
+  .stars-inside{ position:absolute; inset:0; }
+  .star{
+    position:absolute;
+    width:2px; height:2px;
+    background: #f4ecd8;
+    border-radius:50%;
+    animation: twinkle 3.4s ease-in-out infinite;
+  }
+  @keyframes twinkle{
+    0%, 100%{ opacity:0.25; }
+    50%{ opacity:1; }
+  }
+  .window-glow-label{
+    position:absolute; bottom:-26px; left:50%; transform:translateX(-50%);
+  }
+
+  /* hanging lamp */
+  .lamp{
+    position:absolute;
+    top: 6%; right: 12%;
+    width: 60px;
+    cursor: default;
+    text-align:center;
+  }
+  .lamp-cord{ width:1px; height:26px; background: #3a3f52; margin:0 auto; }
+  .lamp-shade{
+    width: 46px; height: 30px;
+    margin: 0 auto;
+    background: linear-gradient(180deg, #caa25a, #8a6a34);
+    border-radius: 4px 4px 20px 20px / 4px 4px 30px 30px;
+    position:relative;
+  }
+  .lamp-light{
+    position:absolute; top: 28px; left:50%; transform:translateX(-50%);
+    width: 140px; height:140px;
+    background: radial-gradient(circle, rgba(240,201,135,0.35), transparent 65%);
+    pointer-events:none;
+    animation: flicker 5s ease-in-out infinite;
+  }
+  @keyframes flicker{
+    0%,100%{ opacity:1; }
+    50%{ opacity:0.85; }
+  }
+
+  /* the bed / chair shape - a cozy reading nook */
+  .bed{
+    position:absolute;
+    left: 8%; bottom: 8%;
+    width: 46%;
+    height: 34%;
+    cursor:pointer;
+    transition: transform 0.4s ease;
+  }
+  .bed:hover{ transform: translateY(-2px); }
+  .bed-frame{
+    position:absolute; bottom:0; left:0; right:0;
+    height: 68%;
+    background: linear-gradient(180deg, #3a2f22, #241c14);
+    border-radius: 8px 8px 3px 3px;
+  }
+  .bed-blanket{
+    position:absolute; bottom: 18%; left:4%; right:4%;
+    height:55%;
+    background: linear-gradient(160deg, #6a3f3a, #4a2a28);
+    border-radius: 10px 10px 4px 4px;
+  }
+  .bed-pillow{
+    position:absolute; bottom: 55%; left: 10%;
+    width: 46%; height: 30%;
+    background: radial-gradient(ellipse at 40% 30%, #f0e6cf, #d8c9a8);
+    border-radius: 40% 45% 45% 45%;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.35);
+  }
+
+  /* small table with photo, letter, music */
+  .table{
+    position:absolute;
+    right: 8%; bottom: 10%;
+    width: 34%;
+    height: 16%;
+  }
+  .table-top{
+    position:absolute; bottom:0; left:0; right:0; top: 55%;
+    background: linear-gradient(180deg, #4a3a26, #2c2317);
+    border-radius: 4px;
+  }
+  .table-leg{
+    position:absolute; bottom:-14%; width:4px; height:16%;
+    background: #2c2317;
+  }
+  .table-leg.l{ left: 12%; }
+  .table-leg.r{ right: 12%; }
+
+  .object{
+    position:absolute;
+    cursor:pointer;
+    transition: transform 0.35s ease, filter 0.35s ease;
+    filter: drop-shadow(0 0 0 rgba(240,201,135,0));
+  }
+  .object:hover{ transform: translateY(-3px) scale(1.05); filter: drop-shadow(0 0 10px rgba(240,201,135,0.4)); }
+
+  .obj-photo{
+    bottom: 60%; left: 8%;
+    width: 15%;
+    aspect-ratio: 3/4;
+    background: linear-gradient(180deg, #f2ead8, #d9cbaa);
+    border-radius: 2px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    transform: rotate(-6deg);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .obj-photo:hover{ transform: rotate(-6deg) translateY(-3px) scale(1.08); }
+  .obj-photo::after{
+    content:'♡';
+    color:#b99a6a; font-size: 14px;
+  }
+
+  .obj-letter{
+    bottom: 58%; left: 34%;
+    width: 20%;
+    aspect-ratio: 4/3;
+    background: linear-gradient(180deg, #e8dcc0, #cdbb90);
+    border-radius: 2px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    transform: rotate(4deg);
+  }
+  .obj-letter::before{
+    content:'';
+    position:absolute; inset: 18% 12%;
+    border-top: 1px solid rgba(0,0,0,0.15);
+    box-shadow: 0 6px 0 -1px rgba(0,0,0,0.1), 0 12px 0 -1px rgba(0,0,0,0.1);
+  }
+
+  .obj-music{
+    bottom: 62%; left: 66%;
+    width: 13%;
+    aspect-ratio: 1/1;
+    background: radial-gradient(circle at 35% 35%, #2a2f42, #0e1220 70%);
+    border: 2px solid #4a4030;
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  }
+  .obj-music::after{
+    content:'';
+    position:absolute; inset:38%;
+    background: var(--gold);
+    border-radius:50%;
+  }
+
+  .object-label{
+    position:absolute;
+    bottom: -20px; left:50%; transform:translateX(-50%);
+    font-family: var(--sans);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    color: var(--blue-grey);
+    white-space:nowrap;
+    opacity:0;
+    transition: opacity 0.3s ease;
+    pointer-events:none;
+  }
+  .object:hover .object-label{ opacity:1; }
+
+  /* pillow at center-ish = final surprise trigger, placed on the bed but distinct glow */
+  .finale-trigger{
+    position:absolute;
+    bottom: 26%; left: 6%;
+    width: 30%; height: 24%;
+    border-radius: 40%;
+    cursor:pointer;
+    z-index:3;
+  }
+  .finale-glow{
+    position:absolute; inset:-30%;
+    background: radial-gradient(circle, rgba(240,201,135,0.25), transparent 70%);
+    border-radius:50%;
+    animation: pulseGlow 3s ease-in-out infinite;
+    pointer-events:none;
+  }
+  @keyframes pulseGlow{
+    0%,100%{ opacity:0.5; transform:scale(1); }
+    50%{ opacity:0.9; transform:scale(1.12); }
+  }
+
+  .room-hint{
+    position:absolute;
+    bottom: max(16px, 3vh);
+    left:0; right:0;
+    text-align:center;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 13px;
+    color: var(--blue-grey);
+    opacity: 0.75;
+    pointer-events:none;
+  }
+
+  /* ============================================================
+     FOCUS OVERLAY — shown when an object is clicked
+     ============================================================ */
+  #overlay{
+    position:absolute; inset:0;
+    z-index: 50;
+    display:flex; align-items:center; justify-content:center;
+    background: rgba(4,6,12,0);
+    backdrop-filter: blur(0px);
+    pointer-events:none;
+    transition: background 0.6s ease, backdrop-filter 0.6s ease;
+  }
+  #overlay.active{
+    background: rgba(4,6,12,0.82);
+    backdrop-filter: blur(3px);
+    pointer-events:auto;
+  }
+
+  .card{
+    max-width: 480px;
+    width: 88%;
+    padding: 44px 38px;
+    text-align:center;
+    position:relative;
+    opacity:0;
+    transform: scale(0.94) translateY(12px);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+  }
+  #overlay.active .card{ opacity:1; transform: scale(1) translateY(0); }
+
+  .card-icon{
+    font-family: var(--serif);
+    font-size: 28px;
+    color: var(--gold);
+    margin-bottom: 18px;
+    opacity: 0.9;
+  }
+  .card-title{
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(20px, 3vw, 26px);
+    color: var(--gold-bright);
+    margin: 0 0 18px;
+  }
+  .card-body{
+    font-family: var(--serif);
+    font-size: clamp(16px, 2.2vw, 19px);
+    line-height: 1.7;
+    color: var(--cream);
+    margin: 0 0 8px;
+  }
+  .card-hand{
+    font-family: var(--hand);
+    font-size: clamp(22px, 3vw, 28px);
+    line-height: 1.6;
+    color: var(--cream);
+  }
+
+  /* photo card specifics */
+  .photo-frame{
+    width: 200px; max-width: 60%;
+    aspect-ratio: 4/5;
+    margin: 0 auto 22px;
+    background: linear-gradient(160deg, #efe6d0, #d3c39a);
+    padding: 10px 10px 26px;
+    border-radius: 2px;
+    box-shadow: 0 14px 40px rgba(0,0,0,0.5);
+  }
+  .photo-inner{
+    width:100%; height:100%;
+    background:
+      radial-gradient(circle at 30% 30%, rgba(216,179,112,0.35), transparent 60%),
+      linear-gradient(160deg, #1a2338, #0c1120);
+    display:flex; align-items:center; justify-content:center;
+    color: var(--blue-grey);
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    font-family: var(--sans);
+    overflow:hidden;
+    position:relative;
+  }
+  .photo-inner img{
+    width:100%; height:100%;
+    object-fit: cover;
+    display:block;
+  }
+
+  /* music player specifics */
+  .player{
+    display:flex; align-items:center; gap:16px;
+    margin: 22px 0 8px;
+    padding: 14px 18px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    text-align:left;
+  }
+  .play-btn{
+    width: 42px; height:42px;
+    border-radius:50%;
+    border: 1px solid var(--gold);
+    background: transparent;
+    color: var(--gold-bright);
+    font-size: 15px;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+    transition: background 0.3s ease;
+  }
+  .play-btn:hover{ background: rgba(216,179,112,0.12); }
+  .track-info{ flex:1; }
+  .track-title{ font-family: var(--sans); font-size: 14px; color: var(--cream); }
+  .track-sub{ font-family: var(--sans); font-size: 11px; color: var(--blue-grey); margin-top:2px; }
+  .track-bar{
+    height: 2px; background: var(--line); border-radius:2px; margin-top:8px; overflow:hidden;
+  }
+  .track-bar-fill{
+    height:100%; width:0%; background: var(--gold); transition: width 0.3s linear;
+  }
+
+  .card-close{
+    margin-top: 26px;
+    background:none; border:none;
+    font-family: var(--sans);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    color: var(--blue-grey);
+    cursor:pointer;
+    padding: 8px 20px;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    transition: color 0.3s ease, border-color 0.3s ease;
+  }
+  .card-close:hover{ color: var(--gold-bright); border-color: var(--gold); }
+
+  /* ============================================================
+     FINALE
+     ============================================================ */
+  #finale{
+    position:absolute; inset:0;
+    z-index: 100;
+    background: var(--navy-deep);
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; pointer-events:none;
+    transition: opacity 1.2s ease;
+  }
+  #finale.active{ opacity:1; pointer-events:auto; }
+
+  .finale-text{
+    text-align:center;
+    max-width: 560px;
+    padding: 0 30px;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(22px, 4vw, 32px);
+    line-height: 1.6;
+    color: var(--cream);
+    opacity:0;
+    transition: opacity 1.4s ease;
+    position:absolute;
+  }
+  .finale-text.show{ opacity:1; }
+  .finale-text.final-line{
+    color: var(--gold-bright);
+    font-size: clamp(26px, 4.5vw, 36px);
+  }
+
+  .finale-particles{
+    position:absolute; inset:0;
+    pointer-events:none;
+  }
+  .mote{
+    position:absolute;
+    width:2px; height:2px;
+    background: var(--gold-bright);
+    border-radius:50%;
+    opacity:0;
+    animation: floatUp 6s ease-in infinite;
+  }
+  @keyframes floatUp{
+    0%{ opacity:0; transform: translateY(0); }
+    10%{ opacity:0.8; }
+    90%{ opacity:0.4; }
+    100%{ opacity:0; transform: translateY(-220px); }
+  }
+
+  .restart{
+    position:absolute;
+    bottom: 40px; left:50%; transform: translateX(-50%);
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--blue-grey);
+    background:none; border:none;
+    cursor:pointer;
+    opacity:0;
+    transition: opacity 1s ease 1s;
+  }
+  .restart.show{ opacity:0.6; }
+  .restart:hover{ opacity:1; }
+
+  @media (max-width: 480px){
+    .room-box{ top: 16%; }
+    .lamp{ right: 8%; }
+    .table{ right: 4%; width: 40%; }
+    .bed{ left: 4%; width: 50%; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<div id="stage">
+  <div class="bg-glow"></div>
+
+  <!-- ============ SCENE 1: OPENING ============ -->
+  <div id="opening">
+    <div class="opening-inner">
+      <div class="opening-mark"></div>
+      <p class="opening-title">Rathi, come here for a minute.</p>
+      <p class="opening-sub">I know you're far away. So I made you somewhere to be with me for a little while.</p>
+      <button class="come-in-btn" id="enterBtn">Come in</button>
+    </div>
+  </div>
+
+  <!-- ============ SCENE 2: THE ROOM ============ -->
+  <div id="room">
+    <div class="room-frame">
+      <p class="room-caption">A little room, just for us. Look around.</p>
+
+      <div class="room-box">
+
+        <div class="window" id="obj-window" tabindex="0">
+          <div class="moon"></div>
+          <div class="stars-inside" id="starsInside"></div>
+          <span class="object-label window-glow-label">the window</span>
+        </div>
+
+        <div class="lamp">
+          <div class="lamp-cord"></div>
+          <div class="lamp-shade"></div>
+          <div class="lamp-light"></div>
+        </div>
+
+        <div class="bed" id="obj-pillow" tabindex="0">
+          <div class="finale-glow" style="bottom:30%; left:10%; width:50%; height:50%; position:absolute;"></div>
+          <div class="bed-frame"></div>
+          <div class="bed-blanket"></div>
+          <div class="bed-pillow"></div>
+          <span class="object-label" style="bottom:-4px;">just... come here</span>
+        </div>
+
+        <div class="table">
+          <div class="table-top"></div>
+          <div class="table-leg l"></div>
+          <div class="table-leg r"></div>
+        </div>
+
+        <div class="object obj-photo" id="obj-photo" tabindex="0">
+          <span class="object-label">the photograph</span>
+        </div>
+        <div class="object obj-letter" id="obj-letter" tabindex="0">
+          <span class="object-label">the letter</span>
+        </div>
+        <div class="object obj-music" id="obj-music" tabindex="0">
+          <span class="object-label">the music</span>
+        </div>
+
+      </div>
+
+      <p class="room-hint" id="roomHint">touch something in the room</p>
+    </div>
+  </div>
+
+  <!-- ============ OVERLAY CARDS ============ -->
+  <div id="overlay">
+    <!-- PHOTOGRAPH -->
+    <div class="card" id="card-photo" style="display:none;">
+      <div class="photo-frame"><div class="photo-inner" id="photoInner">
+        <img src="images/Cuddles.jpg" alt="us" id="photoImg" onerror="this.style.display='none'; document.getElementById('photoFallback').style.display='flex';">
+        <div id="photoFallback" style="display:none; width:100%; height:100%; align-items:center; justify-content:center; color:var(--blue-grey); font-size:12px; letter-spacing:0.05em; text-align:center; padding:12px;">
+          Cuddles.jpg<br>(place this file next to the HTML)
+        </div>
+      </div></div>
+      <p class="card-body">This is my favorite one of us. I look at it more than I probably should.</p>
+      <button class="card-close" data-close>close</button>
+    </div>
+
+    <!-- LETTER -->
+    <div class="card" id="card-letter" style="display:none;">
+      <div class="card-icon">✦</div>
+      <p class="card-hand">
+        I've rewritten this a few times because nothing sounds like enough.<br>
+        So I'll just say it plain... I miss you in the small, ordinary moments most.<br>
+        Cooking food. Walking somewhere. Listening to music. Doing nothing.<br>
+        I made this whole room just so you'd feel me near you for a minute.
+      </p>
+      <button class="card-close" data-close>close</button>
+    </div>
+
+    <!-- MUSIC -->
+    <div class="card" id="card-music" style="display:none;">
+      <div class="card-icon">♪</div>
+      <p class="card-title">a song for tonight</p>
+      <audio id="audioEl" src="Apocalypse.mp3" preload="none"></audio>
+      <div class="player">
+        <button class="play-btn" id="playBtn">▶</button>
+        <div class="track-info">
+          <div class="track-title">Apocalypse</div>
+          <div class="track-sub">Cigarettes After Sex</div>
+          <div class="track-bar"><div class="track-bar-fill" id="trackFill"></div></div>
+        </div>
+      </div>
+      <p class="card-body" id="audioNote" style="font-size:14px; color:var(--blue-grey);">just let it play softly while we sit here</p>
+      <button class="card-close" data-close>close</button>
+    </div>
+
+    <!-- WINDOW -->
+    <div class="card" id="card-window" style="display:none;">
+      <div class="card-icon">☾</div>
+      <p class="card-body">
+        Somewhere past those stars is the actual sky above you.<br>
+        I hate that there's this much distance between us.<br>
+        I wish I could just walk over, open your door, and be there.<br>
+        Since I can't yet, I built you this instead.
+      </p>
+      <button class="card-close" data-close>close</button>
+    </div>
+  </div>
+
+  <!-- ============ FINALE ============ -->
+  <div id="finale">
+    <div class="finale-particles" id="particles"></div>
+    <p class="finale-text" id="f1">Okay. Close your eyes for a second.</p>
+    <p class="finale-text" id="f2">Imagine I just walked over and hugged you.</p>
+    <p class="finale-text" id="f3">No talking. No fixing anything. No distance.<br>Just you and me for a little while.</p>
+    <p class="finale-text final-line" id="f4">I love you, Calypso. ❤️</p>
+    <button class="restart" id="restartBtn">start again</button>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- helpers ----------
+  function $(sel){ return document.querySelector(sel); }
+  function $all(sel){ return Array.from(document.querySelectorAll(sel)); }
+
+  // ---------- opening -> room ----------
+  var opening = $('#opening');
+  var room = $('#room');
+  var enterBtn = $('#enterBtn');
+
+  enterBtn.addEventListener('click', function(){
+    opening.classList.add('leaving');
+    setTimeout(function(){
+      opening.style.display = 'none';
+      room.classList.add('active');
+    }, 1300);
+  });
+
+  // ---------- scatter stars inside the window ----------
+  var starsInside = $('#starsInside');
+  for(var i=0;i<18;i++){
+    var s = document.createElement('div');
+    s.className = 'star';
+    s.style.left = (Math.random()*90+5) + '%';
+    s.style.top = (Math.random()*70+5) + '%';
+    s.style.animationDelay = (Math.random()*3) + 's';
+    starsInside.appendChild(s);
+  }
+
+  // ---------- object -> overlay cards ----------
+  var overlay = $('#overlay');
+  var roomHint = $('#roomHint');
+  var cards = {
+    'obj-photo': 'card-photo',
+    'obj-letter': 'card-letter',
+    'obj-music': 'card-music',
+    'obj-window': 'card-window'
+  };
+
+  function openCard(cardId){
+    $all('.card').forEach(function(c){ c.style.display = 'none'; });
+    var card = document.getElementById(cardId);
+    card.style.display = 'block';
+    overlay.classList.add('active');
+    roomHint.style.opacity = '0';
+  }
+
+  function closeCard(){
+    overlay.classList.remove('active');
+    roomHint.style.opacity = '0.75';
+    // pause music if playing
+    if(isPlaying) stopTrack();
+  }
+
+  Object.keys(cards).forEach(function(objId){
+    var el = document.getElementById(objId);
+    el.addEventListener('click', function(){ openCard(cards[objId]); });
+    el.addEventListener('keypress', function(e){
+      if(e.key === 'Enter') openCard(cards[objId]);
+    });
+  });
+
+  $all('[data-close]').forEach(function(btn){
+    btn.addEventListener('click', closeCard);
+  });
+  overlay.addEventListener('click', function(e){
+    if(e.target === overlay) closeCard();
+  });
+
+  // ---------- music player (real audio file: apocalypse-cas.mp3) ----------
+  var isPlaying = false;
+  var playBtn = $('#playBtn');
+  var trackFill = $('#trackFill');
+  var audioEl = $('#audioEl');
+  var audioNote = $('#audioNote');
+
+  function stopTrack(){
+    isPlaying = false;
+    playBtn.textContent = '▶';
+    audioEl.pause();
+  }
+
+  audioEl.addEventListener('timeupdate', function(){
+    if(audioEl.duration){
+      trackFill.style.width = (audioEl.currentTime / audioEl.duration * 100) + '%';
+    }
+  });
+  audioEl.addEventListener('ended', function(){
+    isPlaying = false;
+    playBtn.textContent = '▶';
+    trackFill.style.width = '0%';
+  });
+
+  playBtn.addEventListener('click', function(){
+    if(isPlaying){
+      stopTrack();
+    } else {
+      var playPromise = audioEl.play();
+      if(playPromise !== undefined){
+        playPromise.then(function(){
+          isPlaying = true;
+          playBtn.textContent = '❚❚';
+        }).catch(function(){
+          // file not found or blocked — fall back gracefully
+          audioNote.textContent = 'add "apocalypse-cas.mp3" next to this file to hear it play';
+        });
+      }
+    }
+  });
+
+  // ---------- finale ----------
+  var finaleTrigger = $('#obj-pillow');
+  var finale = $('#finale');
+
+  function launchFinale(){
+    closeCard();
+    room.style.transition = 'opacity 1s ease';
+    room.style.opacity = '0';
+    finale.classList.add('active');
+    spawnParticles();
+
+    var lines = ['#f1','#f2','#f3','#f4'];
+    var delays = [400, 2400, 4600, 7400];
+    lines.forEach(function(sel, i){
+      setTimeout(function(){
+        // hide previous
+        if(i>0) document.querySelector(lines[i-1]).classList.remove('show');
+        document.querySelector(sel).classList.add('show');
+      }, delays[i]);
+    });
+    setTimeout(function(){
+      $('#restartBtn').classList.add('show');
+    }, delays[3] + 1500);
+  }
+
+  finaleTrigger.addEventListener('click', launchFinale);
+  finaleTrigger.addEventListener('keypress', function(e){
+    if(e.key === 'Enter') launchFinale();
+  });
+
+  function spawnParticles(){
+    var container = $('#particles');
+    for(var i=0;i<26;i++){
+      var m = document.createElement('div');
+      m.className = 'mote';
+      m.style.left = (Math.random()*100) + '%';
+      m.style.top = (60 + Math.random()*30) + '%';
+      m.style.animationDelay = (Math.random()*6) + 's';
+      m.style.animationDuration = (5 + Math.random()*3) + 's';
+      container.appendChild(m);
+    }
+  }
+
+  // ---------- restart ----------
+  $('#restartBtn').addEventListener('click', function(){
+    location.reload();
+  });
+
+})();
+</script>
+</body>
+</html>
