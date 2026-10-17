@@ -650,6 +650,12 @@
 
   entries.forEach(function(entry){ revealObserver.observe(entry); });
 
+  // Safety fallback for entries near the bottom of the page.
+  // If IntersectionObserver misses one, it should still be visible.
+  setTimeout(function(){
+    entries.forEach(function(entry){ entry.classList.add('visible'); });
+  }, 300);
+
 })();
 </script>
 </body>
